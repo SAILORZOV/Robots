@@ -11,7 +11,6 @@ public class MenuBarBuilder {
         menuBar.add(createLookAndFeelMenu(frame));
         menuBar.add(createTestMenu(frame));
         menuBar.add(createFileMenu(frame));
-        menuBar.add(createExitMenu(frame));
         return menuBar;
     }
 
@@ -47,23 +46,6 @@ public class MenuBarBuilder {
         return fileMenu;
     }
 
-    private static JMenu createExitMenu(MainApplicationFrame frame) {
-        JMenu exitMenu = new JMenu("Выход");
-        exitMenu.setMnemonic(KeyEvent.VK_E);
-        exitMenu.getAccessibleContext().setAccessibleDescription(
-                "Выход?? типа");
-
-        addExitMenuItem(exitMenu, frame);
-
-        return exitMenu;
-    }
-
-    private static void addExitMenuItem(JMenu menu, MainApplicationFrame frame) {
-        JMenuItem exitMenuItem = new JMenuItem("Выход", KeyEvent.VK_X);
-        exitMenuItem.addActionListener(event -> confirmExit(frame));
-        menu.add(exitMenuItem);
-    }
-
     private static void addLogMessageItem(JMenu menu, MainApplicationFrame frame) {
         JMenuItem addLogMessageItem = new JMenuItem("Сообщение в лог", KeyEvent.VK_S);
         addLogMessageItem.addActionListener(event -> Logger.debug("Новая строка"));
@@ -86,25 +68,5 @@ public class MenuBarBuilder {
             frame.invalidate();
         });
         menu.add(systemLookAndFeel);
-    }
-
-    private static void confirmExit(MainApplicationFrame frame) {
-        String message = "Вы действительно хотите выйти?";
-        String title = "Подтверждение выхода";
-        Object[] options = {"Да", "Нет"};
-
-        int result = JOptionPane.showOptionDialog(
-                frame,
-                message,
-                title,
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.QUESTION_MESSAGE,
-                null, // Иконка
-                options,
-                options[1] // Выбранный по умолчанию вариант
-        );
-        if (result == JOptionPane.YES_OPTION) {
-            System.exit(0);
-        }
     }
 }

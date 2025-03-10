@@ -2,14 +2,10 @@ package gui;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
-import javax.swing.JDesktopPane;
-import javax.swing.JFrame;
-import javax.swing.JInternalFrame;
-import javax.swing.JMenuBar;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.*;
 
 import log.Logger;
 
@@ -32,12 +28,18 @@ public class MainApplicationFrame extends JFrame {
         LogWindow logWindow = createLogWindow();
         addWindow(logWindow);
 
-        GameWindow gameWindow = new GameWindow();
-        gameWindow.setSize(400, 400);
+        GameWindow gameWindow = createGameWindow();
         addWindow(gameWindow);
 
         setJMenuBar(generateMenuBar());
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                confirmExit();
+            }
+        });
     }
 
     public void applyLookAndFeel(String className) {
@@ -47,12 +49,14 @@ public class MainApplicationFrame extends JFrame {
 
     protected LogWindow createLogWindow() {
         LogWindow logWindow = new LogWindow(Logger.getDefaultLogSource());
-        logWindow.setLocation(10, 10);
-        logWindow.setSize(300, 800);
-        setMinimumSize(logWindow.getSize());
-        logWindow.pack();
-        Logger.debug("Протокол работает");
+        Logger.debug("LogWindow работает");
         return logWindow;
+    }
+
+    protected GameWindow createGameWindow() {
+        GameWindow gameWindow = new GameWindow();
+        Logger.debug("GameWindow работает");
+        return gameWindow;
     }
 
     protected void addWindow(JInternalFrame frame) {
@@ -71,6 +75,31 @@ public class MainApplicationFrame extends JFrame {
         } catch (ClassNotFoundException | InstantiationException
                  | IllegalAccessException | UnsupportedLookAndFeelException e) {
             // just ignore
+        }
+    }
+
+    public void confirmExit() {
+        String message = "Вы действительно хотите выйти?";
+        String title = "Подтверждение выхода";
+        Object[] options = {"Да", "Нет"};
+
+        int result = JOptionPane.showOptionDialog(
+                this,
+                message,
+                title,
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null, // Иконка
+                options,
+                options[1] // Выбранный по умолчанию вариант
+        );
+        if (result == JOptionPane.YES_OPTION) {
+            for (JInternalFrame frame : desktopPane.getAllFrames()) {
+                if (frame instanceof Savable) {
+                    ((Savable) frame).saveState();
+                }
+            }
+            System.exit(0);
         }
     }
 }
