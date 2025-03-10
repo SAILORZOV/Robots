@@ -28,8 +28,7 @@ public class MainApplicationFrame extends JFrame {
         LogWindow logWindow = createLogWindow();
         addWindow(logWindow);
 
-        GameWindow gameWindow = new GameWindow();
-        gameWindow.setSize(400, 400);
+        GameWindow gameWindow = createGameWindow();
         addWindow(gameWindow);
 
         setJMenuBar(generateMenuBar());
@@ -50,12 +49,14 @@ public class MainApplicationFrame extends JFrame {
 
     protected LogWindow createLogWindow() {
         LogWindow logWindow = new LogWindow(Logger.getDefaultLogSource());
-        logWindow.setLocation(10, 10);
-        logWindow.setSize(300, 800);
-        setMinimumSize(logWindow.getSize());
-        logWindow.pack();
-        Logger.debug("Протокол работает");
+        Logger.debug("LogWindow работает");
         return logWindow;
+    }
+
+    protected GameWindow createGameWindow() {
+        GameWindow gameWindow = new GameWindow();
+        Logger.debug("GameWindow работает");
+        return gameWindow;
     }
 
     protected void addWindow(JInternalFrame frame) {
@@ -93,6 +94,11 @@ public class MainApplicationFrame extends JFrame {
                 options[1] // Выбранный по умолчанию вариант
         );
         if (result == JOptionPane.YES_OPTION) {
+            for (JInternalFrame frame : desktopPane.getAllFrames()) {
+                if (frame instanceof Savable) {
+                    ((Savable) frame).saveState();
+                }
+            }
             System.exit(0);
         }
     }
