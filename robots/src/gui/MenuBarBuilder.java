@@ -3,7 +3,10 @@ package gui;
 import log.Logger;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class MenuBarBuilder {
     public static JMenuBar createMenuBar(MainApplicationFrame frame) {
@@ -11,6 +14,7 @@ public class MenuBarBuilder {
         menuBar.add(createLookAndFeelMenu(frame));
         menuBar.add(createTestMenu(frame));
         menuBar.add(createFileMenu(frame));
+        menuBar.add(createExitMenu(frame));
         return menuBar;
     }
 
@@ -68,5 +72,13 @@ public class MenuBarBuilder {
             frame.invalidate();
         });
         menu.add(systemLookAndFeel);
+    }
+
+    private static JMenu createExitMenu(MainApplicationFrame frame) {
+        JMenu exitMenu = new JMenu("Выход");
+        JMenuItem exitButton = new JMenuItem("Выход");
+        exitButton.addActionListener(event -> frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING)));
+        exitMenu.add(exitButton);
+        return exitMenu;
     }
 }
