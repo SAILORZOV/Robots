@@ -49,12 +49,14 @@ public class MainApplicationFrame extends JFrame {
 
     protected LogWindow createLogWindow() {
         LogWindow logWindow = new LogWindow(Logger.getDefaultLogSource());
+        logWindow.loadState();
         Logger.debug("LogWindow работает");
         return logWindow;
     }
 
     protected GameWindow createGameWindow() {
         GameWindow gameWindow = new GameWindow();
+        gameWindow.loadState();
         Logger.debug("GameWindow работает");
         return gameWindow;
     }
