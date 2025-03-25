@@ -20,12 +20,15 @@ public class LogWindow extends MyWindow implements LogChangeListener {
         m_logContent = new JTextArea();
         m_logContent.setEditable(false);
 
+        minHeight = 500;
+        minWidth = 200;
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(m_logContent, BorderLayout.CENTER);
         getContentPane().add(panel);
         setLocation(10, 10);
-        setMinimumSize(new Dimension(200, 500));
-        setSize(300, 800);
+        setSize(200, 500);
+        setMinimumSize(getSize());
+
         pack();
         updateLogContent();
     }
