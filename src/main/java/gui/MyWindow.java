@@ -1,35 +1,24 @@
 package gui;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
 import javax.swing.*;
 import java.awt.*;
 import java.beans.PropertyVetoException;
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.HashMap;
 
 public abstract class MyWindow extends JInternalFrame implements Savable {
-    private static final String SAVE_FILE_PATH = System.getProperty("user.home") + "/RobotsSaveData/save_data.json";
     private final String windowKey;
+    protected int minHeight, minWidth;
 
-    protected MyWindow (String title, String windowKey) {
+    protected MyWindow(String title, String windowKey) {
         super(title, true, true, true, true);
         this.windowKey = windowKey;
     }
 
     @Override
-    public void saveState() {
+    public HashMap<String, Integer> saveState() {
         try {
             if (isClosed()) {
-                return;
-            }
-
-            Path dir = Paths.get(System.getProperty("user.home"), "RobotsSaveData");
-            if (!Files.exists(dir)) {
-                Files.createDirectory(dir);
+                return new HashMap<>();
             }
 
             int width, height, x, y;
@@ -49,64 +38,43 @@ public abstract class MyWindow extends JInternalFrame implements Savable {
                 setMaximum(true);
             }
 
-            ObjectMapper objectMapper = new ObjectMapper();
-            ObjectNode root = objectMapper.createObjectNode();
-            File file = new File(SAVE_FILE_PATH);
-            if (file.exists()) {
-                root = (ObjectNode) objectMapper.readTree(file);
-            }
+            HashMap<String, Integer> state = new HashMap<>();
+            state.put(windowKey + ".width", width);
+            state.put(windowKey + ".height", height);
+            state.put(windowKey + ".x", x);
+            state.put(windowKey + ".y", y);
+            state.put(windowKey + ".state", isIcon() ? 0 : (wasMaximized ? 2 : 1));
 
-            ObjectNode windowState = objectMapper.createObjectNode();
-            windowState.put("width", width);
-            windowState.put("height", height);
-            windowState.put("x", x);
-            windowState.put("y", y);
-            windowState.put("state", isIcon() ? 0 : (wasMaximized ? 2 : 1));
-
-            root.set(windowKey, windowState);
-
-            objectMapper.writerWithDefaultPrettyPrinter().writeValue(file, root);
-        } catch (IOException | PropertyVetoException e) {
+            return state;
+        } catch (PropertyVetoException e) {
             e.printStackTrace();
         }
+        return new HashMap<>();
     }
 
     @Override
-    public void loadState() {
+    public void loadState(HashMap<String, Integer> state) {
         try {
-            if (isClosed()) {
+            if (isClosed() || state == null) {
                 return;
             }
 
-            File file = new File(SAVE_FILE_PATH);
-            if (!file.exists()) {
-                return;
-            }
-
-            ObjectMapper objectMapper = new ObjectMapper();
-            ObjectNode root = (ObjectNode) objectMapper.readTree(file);
-
-            ObjectNode windowState = (ObjectNode) root.get(windowKey);
-            if (windowState == null) {
-                return;
-            }
-
-            int width = windowState.get("width").asInt();
-            int height = windowState.get("height").asInt();
-            int x = windowState.get("x").asInt();
-            int y = windowState.get("y").asInt();
-            int state = windowState.get("state").asInt();
+            int width = Math.max(state.getOrDefault(windowKey + ".width", getWidth()), minWidth);
+            int height = Math.max(state.getOrDefault(windowKey + ".height", getHeight()), minHeight);
+            int x =  state.getOrDefault(windowKey + ".x", getX());
+            int y = state.getOrDefault(windowKey + ".y", getY());
+            int windowState = state.getOrDefault(windowKey + ".state", 1);
 
             setSize(new Dimension(width, height));
             setLocation(x, y);
 
-            if (state == 0) {
+            if (windowState == 0) {
                 setIcon(true);
             } else {
                 setIcon(false);
             }
 
-            if (state == 2) {
+            if (windowState == 2) {
                 setMaximum(true);
             }
         } catch (Exception e) {

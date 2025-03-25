@@ -8,6 +8,8 @@ public class GameWindow extends MyWindow {
 
     public GameWindow() {
         super("Игровое поле", "gameWindow");
+        minHeight = 400;
+        minWidth = 400;
         m_visualizer = new GameVisualizer();
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(m_visualizer, BorderLayout.CENTER);

@@ -4,7 +4,6 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-
 import javax.swing.*;
 
 import log.Logger;
@@ -12,6 +11,7 @@ import log.Logger;
 
 public class MainApplicationFrame extends JFrame {
     private final JDesktopPane desktopPane = new JDesktopPane();
+    private final WindowManager windowManager;
 
     public MainApplicationFrame() {
         //Make the big window be indented 50 pixels from each edge
@@ -24,6 +24,7 @@ public class MainApplicationFrame extends JFrame {
 
         setContentPane(desktopPane);
 
+        windowManager = new WindowManager();
 
         LogWindow logWindow = createLogWindow();
         addWindow(logWindow);
@@ -49,14 +50,14 @@ public class MainApplicationFrame extends JFrame {
 
     protected LogWindow createLogWindow() {
         LogWindow logWindow = new LogWindow(Logger.getDefaultLogSource());
-        logWindow.loadState();
+        windowManager.loadWindowState(logWindow);
         Logger.debug("LogWindow работает");
         return logWindow;
     }
 
     protected GameWindow createGameWindow() {
         GameWindow gameWindow = new GameWindow();
-        gameWindow.loadState();
+        windowManager.loadWindowState(gameWindow);
         Logger.debug("GameWindow работает");
         return gameWindow;
     }
@@ -98,9 +99,10 @@ public class MainApplicationFrame extends JFrame {
         if (result == JOptionPane.YES_OPTION) {
             for (JInternalFrame frame : desktopPane.getAllFrames()) {
                 if (frame instanceof Savable) {
-                    ((Savable) frame).saveState();
+                    windowManager.saveWindowState((MyWindow) frame);
                 }
             }
+            windowManager.saveToDisk();
             System.exit(0);
         }
     }
