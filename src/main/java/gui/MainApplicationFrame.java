@@ -12,6 +12,7 @@ import log.Logger;
 public class MainApplicationFrame extends JFrame {
     private final JDesktopPane desktopPane = new JDesktopPane();
     private final WindowManager windowManager;
+    RobotModel model = new RobotModel();
 
     public MainApplicationFrame() {
         //Make the big window be indented 50 pixels from each edge
@@ -31,6 +32,9 @@ public class MainApplicationFrame extends JFrame {
 
         GameWindow gameWindow = createGameWindow();
         addWindow(gameWindow);
+
+        CoordinatesWindow coordinatesWindow = createCoordinatesWindow();
+        addWindow(coordinatesWindow);
 
         setJMenuBar(generateMenuBar());
 
@@ -56,11 +60,19 @@ public class MainApplicationFrame extends JFrame {
     }
 
     protected GameWindow createGameWindow() {
-        GameWindow gameWindow = new GameWindow();
+        GameWindow gameWindow = new GameWindow(model);
         windowManager.loadWindowState(gameWindow);
         Logger.debug("GameWindow работает");
         return gameWindow;
     }
+
+    protected CoordinatesWindow createCoordinatesWindow() {
+        CoordinatesWindow coordinatesWindow = new CoordinatesWindow(model);
+        windowManager.loadWindowState(coordinatesWindow);
+        Logger.debug("CoordinatesWindow работает");
+        return coordinatesWindow;
+    }
+
 
     protected void addWindow(JInternalFrame frame) {
         desktopPane.add(frame);
