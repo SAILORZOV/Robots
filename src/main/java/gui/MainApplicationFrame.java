@@ -7,6 +7,8 @@ import java.awt.event.WindowEvent;
 import javax.swing.*;
 
 import log.Logger;
+import programLogic.RobotModel;
+import programLogic.WindowManager;
 
 
 public class MainApplicationFrame extends JFrame {

@@ -1,5 +1,8 @@
 package gui;
 
+import programLogic.RobotDataStructure;
+import programLogic.RobotModel;
+
 import javax.swing.*;
 import java.util.Observable;
 import java.util.Observer;
@@ -18,9 +21,9 @@ public class CoordinatesWindow extends MyWindow implements Observer {
 
     @Override
     public void update(Observable o, Object arg) {
-        if (o instanceof RobotModel model) {
+        if (o instanceof RobotModel model && arg instanceof RobotDataStructure structure) {
             SwingUtilities.invokeLater(() -> {
-                label.setText(String.format("X: %.2f, Y: %.2f", model.getX(), model.getY()));
+                label.setText(String.format("X: %.2f, Y: %.2f", structure.positionX, structure.positionY));
             });
         }
     }

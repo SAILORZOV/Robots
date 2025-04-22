@@ -1,5 +1,8 @@
 package gui;
 
+import programLogic.GameVisualizer;
+import programLogic.RobotModel;
+
 import java.awt.*;
 import javax.swing.JPanel;
 

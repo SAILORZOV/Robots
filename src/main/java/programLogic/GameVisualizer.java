@@ -1,62 +1,52 @@
-package gui;
+package programLogic;
 
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.Timer;
 import java.util.TimerTask;
+import javax.swing.*;
 
-import javax.swing.JPanel;
 
-public class GameVisualizer extends JPanel {
-    private final Timer m_timer = initTimer();
+public class GameVisualizer extends JPanel implements Observer {
+    private volatile double
+            positionX = 100,
+            positionY = 100,
+            direction = 0;
 
-    private static Timer initTimer() {
-        Timer timer = new Timer("events generator", true);
-        return timer;
+    private volatile int
+            targetX = 100,
+            targetY = 100;
+
+    private final java.util.Timer m_timer = initTimer();
+
+    private static java.util.Timer initTimer() {
+        return new Timer("redraw generator", true);
     }
 
-    private volatile int m_targetPositionX = 150;
-    private volatile int m_targetPositionY = 100;
-
-    private RobotModel model;
-
     public GameVisualizer(RobotModel model) {
-        this.model = model;
 
-        m_timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                model.updateModel();
-            }
-        }, 0, 10);
         m_timer.schedule(new TimerTask() {
             @Override
             public void run() {
                 EventQueue.invokeLater(GameVisualizer.this::repaint);
             }
-        }, 0, 50);
-
+        }, 0, 10);
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 model.setTargetPosition(e.getX(), e.getY());
-                setTargetPosition(e.getPoint());
-                repaint();
             }
         });
 
+        model.addObserver(this);
         setDoubleBuffered(true);
-    }
-
-    protected void setTargetPosition(Point p) {
-        m_targetPositionX = p.x;
-        m_targetPositionY = p.y;
     }
 
     protected void onRedrawEvent() {
@@ -67,8 +57,8 @@ public class GameVisualizer extends JPanel {
     public void paint(Graphics g) {
         super.paint(g);
         Graphics2D g2d = (Graphics2D) g;
-        drawRobot(g2d, model.getX(), model.getY(), model.getDirection());
-        drawTarget(g2d, m_targetPositionX, m_targetPositionY);
+        drawRobot(g2d, positionX, positionY, direction);
+        drawTarget(g2d, targetX, targetY);
     }
 
     private static void fillOval(Graphics g, int centerX, int centerY, int diam1, int diam2) {
@@ -102,5 +92,18 @@ public class GameVisualizer extends JPanel {
         fillOval(g, x, y, 5, 5);
         g.setColor(Color.BLACK);
         drawOval(g, x, y, 5, 5);
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+        if (o instanceof RobotModel && arg instanceof RobotDataStructure structure) {
+            SwingUtilities.invokeLater(() -> {
+                positionX = structure.positionX;
+                positionY = structure.positionY;
+                direction = structure.direction;
+                targetX = structure.targetX;
+                targetY = structure.targetY;
+            });
+        }
     }
 }

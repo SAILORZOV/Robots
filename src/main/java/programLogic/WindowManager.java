@@ -1,7 +1,8 @@
-package gui;
+package programLogic;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
+import gui.MyWindow;
 
 import java.io.File;
 import java.io.IOException;

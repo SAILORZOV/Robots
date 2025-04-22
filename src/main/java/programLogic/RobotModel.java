@@ -1,6 +1,9 @@
-package gui;
+package programLogic;
 
 import java.util.Observable;
+import java.util.Timer;
+import java.util.TimerTask;
+
 
 public class RobotModel extends Observable {
     private volatile double positionX = 100;
@@ -13,7 +16,20 @@ public class RobotModel extends Observable {
     private static final double maxVelocity = 0.1;
     private static final double maxAngularVelocity = 0.001;
 
+
+    private final Timer m_timer = initTimer();
+
+    private static Timer initTimer() {
+        return new Timer("robot update generator", true);
+    }
+
     public RobotModel() {
+        m_timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                updateModel();
+            }
+        }, 0, 10);
     }
 
     public void setTargetPosition(int x, int y) {
@@ -32,7 +48,7 @@ public class RobotModel extends Observable {
 
         moveRobot(velocity, angularVelocity, 10);
         setChanged();
-        notifyObservers();
+        notifyObservers(new RobotDataStructure(positionX, positionY, direction, targetX, targetY));
     }
 
     private void moveRobot(double velocity, double angularVelocity, double duration) {
@@ -76,15 +92,15 @@ public class RobotModel extends Observable {
         return Math.max(min, Math.min(max, value));
     }
 
-    public double getX() {
-        return positionX;
-    }
-
-    public double getY() {
-        return positionY;
-    }
-
-    public double getDirection() {
-        return direction;
-    }
+//    public double getX() {
+//        return positionX;
+//    }
+//
+//    public double getY() {
+//        return positionY;
+//    }
+//
+//    public double getDirection() {
+//        return direction;
+//    }
 }
