@@ -1,4 +1,7 @@
-package programLogic;
+package gui;
+
+import programLogic.RobotDataStructure;
+import programLogic.RobotModel;
 
 import java.awt.Color;
 import java.awt.EventQueue;
