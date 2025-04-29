@@ -1,4 +1,6 @@
-package gui;
+package programLogic;
+
+import gui.MainApplicationFrame;
 
 import java.awt.Frame;
 
